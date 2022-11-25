@@ -1,4 +1,4 @@
-﻿namespace TempRangeService
+﻿namespace ScoreDiffService
 {
     using System;
     using System.Collections.Generic;
@@ -7,25 +7,27 @@
     using System.Text;
     using System.Threading.Tasks;
 
-    public class MinTempRangeService
+    public class ScoreDiffService
     {
-        private int iDay { get; set; }
-        private int iMaxTemp { get; set; }
-        private int iMinTemp { get; set; }
+        private string sTeam { get; set; }
+        private int iScoreFor { get; set; }
+        private int iScoredAgainst { get; set; }
         private string sFilePath { get; set; }
-        private int iMinTempRange { get; set; }
+        private int iScoreDiff { get; set; }
         private bool fileExist { get; set; }
         private bool dataCollectionValid { get; set; }
+        private int colCount = 10;
+
 
         public string sResult = string.Empty;
-        public List<MinTempRangeService> Temps { get; set; } = new List<MinTempRangeService>();
+        public List<ScoreDiffService> Temps { get; set; } = new List<ScoreDiffService>();
 
-        public MinTempRangeService()
+        public ScoreDiffService()
         {
 
         }
 
-        public MinTempRangeService(string path)
+        public ScoreDiffService(string path)
         {
             sFilePath = path;
         }
@@ -43,13 +45,13 @@
             return fileExist;
         }
 
-        public int GetSmallestTempRange()
+        public int GetSmallestScoresRange()
         {
             if (FileExist())
             {
                 if (CreateTempCollection())
                 {
-                    var result = GetLowestTempRange();
+                    var result = GetScoresDiffRange();
                     if (!result)
                     {
                         return 0;
@@ -60,7 +62,7 @@
                     sResult = "Temp collection issue;";
                     return 0;
                 }
-                return iMinTempRange;
+                return iScoreDiff;
             }
             else
             {
@@ -69,14 +71,14 @@
             }
         }
 
-        private bool GetLowestTempRange()
+        private bool GetScoresDiffRange()
         {
             try
             {
                 foreach (var temp in Temps)
                 {
-                    if ((temp.iMaxTemp - temp.iMinTemp) < iMinTempRange || iMinTempRange == 0)
-                        iMinTempRange = (temp.iMaxTemp - temp.iMinTemp);
+                    if ((temp.iScoreFor - temp.iScoredAgainst) > 0 && (temp.iScoreFor - temp.iScoredAgainst) < iScoreDiff || iScoreDiff == 0)
+                        iScoreDiff = (temp.iScoreFor - temp.iScoredAgainst);
                 }
 
                 return true;
@@ -97,7 +99,7 @@
 
             //Console.WriteLine(ln);
 
-            ln = ln.Trim().Replace(" F", "F").Replace("*", ""); //data with text to denote Float is bad practice so the data was cleaned up
+            //ln = ln.Trim().Replace(" F", "F").Replace("*", ""); //data with text to denote Float is bad practice so the data was cleaned up
 
             //Console.WriteLine(ln);
 
@@ -125,25 +127,30 @@
 
                 while ((ln = file.ReadLine()) != null)
                 {
-                    if (counter > 1)
+                    if (counter > 0)
                     {
 
                         var data = CleanData(ln);
-                        var rec = new MinTempRangeService();
 
-                        int iDayConv = 0;
-                        if (int.TryParse(data[0].ToString(), out iDayConv))
-                            rec.iDay = iDayConv;
+                        if (data.Length != colCount)
+                        {
+                            sResult = "At least one data row bypassed";
+                            continue;
+                        }
 
-                        var iMaxConvTemp = 0;
-                        if (int.TryParse(data[1], out iMaxConvTemp))
-                            rec.iMaxTemp = iMaxConvTemp;
+                        var rec = new ScoreDiffService();
 
-                        var iMinConvTemp = 0;
-                        if (int.TryParse(data[2], out iMinConvTemp))
-                            rec.iMinTemp = iMinConvTemp;
+                        rec.sTeam = data[1];
 
-                        if (rec.iDay > 0 && rec.iMaxTemp > 0 && rec.iMinTemp > 0)
+                        var iScoreFor = 0;
+                        if (int.TryParse(data[6], out iScoreFor))
+                            rec.iScoreFor = iScoreFor;
+
+                        var iScoredAgainst = 0;
+                        if (int.TryParse(data[8], out iScoredAgainst))
+                            rec.iScoredAgainst = iScoredAgainst;
+
+                        if (rec.sTeam != null && rec.iScoreFor > 0 && rec.iScoredAgainst > 0)
                         {
                             Temps.Add(rec);
                         }
