@@ -120,7 +120,7 @@
             while (ln.Contains("  "))
             {
                 ln = ln.Trim().Replace("  ", " ");
-              }
+            }
 
             ln = ln.Replace(" ", ",");
 
@@ -148,9 +148,20 @@
                                 if (dataFileMap.compareDataColumnKey == d.Key)
                                     rec.compareDataColumnKey = ln.Substring(d.Key, d.Value).Trim();
                                 else if (dataFileMap.compareColumnIndex1 == d.Key)
-                                    rec.compareDataColumnIndex1 = int.Parse(CleanData(ln.Substring(d.Key, d.Value), dataFileMap.filters));
+                                {
+                                    int parseData1;
+
+                                    if (int.TryParse(CleanData(ln.Substring(d.Key, d.Value), dataFileMap.filters), out parseData1))
+                                        rec.compareDataColumnIndex1 = parseData1;
+                                }
                                 else if (dataFileMap.compareColumnIndex2 == d.Key)
-                                    rec.compareDataColumnIndex2 = int.Parse(CleanData(ln.Substring(d.Key, d.Value), dataFileMap.filters));
+                                {
+                                    int parseData2;
+
+                                    if (int.TryParse(CleanData(ln.Substring(d.Key, d.Value), dataFileMap.filters), out parseData2))
+                                        rec.compareDataColumnIndex2 = parseData2;
+                                    
+                                }
                             }
 
                             FileData.Add(rec);

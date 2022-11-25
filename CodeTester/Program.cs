@@ -5,7 +5,7 @@ string path = "c:\\users\\gbales\\downloads\\weather.dat";
 
 var dataMap = new DataFileMap();
 
-dataMap.compareDataColumnKey = 0; //column # in data file 
+dataMap.compareDataColumnKey = 0; //dict index and also offset of data in file record
 dataMap.compareColumnIndex1 = 4;
 dataMap.compareColumnIndex2 = 8;
 dataMap.ignoreNegativeValues = true;
@@ -58,7 +58,7 @@ dataMap.dataColumns = dataColumns;
 var diffService1 = new UniversalDataDiffService(path, dataMap);
 result = diffService1.GetSmallestDataRange();
 
-Console.WriteLine("weather min diff " + result);
+Console.WriteLine("Score min diff " + result);
 
 Console.WriteLine();
 
